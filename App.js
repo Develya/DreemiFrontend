@@ -1,6 +1,5 @@
 import * as React from 'react';
 import 'expo-dev-client'
-import 'dotenv/config';
 
 /* React Navigation*/
 import { NavigationContainer } from '@react-navigation/native';

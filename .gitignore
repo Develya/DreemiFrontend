@@ -4,6 +4,7 @@
 secrets.json
 android/
 .env
+app.json
 
 # dependencies
 node_modules/
