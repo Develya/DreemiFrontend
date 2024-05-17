@@ -1,43 +1,16 @@
-import * as React from 'react';
-import { StyleSheet, Text, View, Button } from 'react-native';
+import React from 'react';
+import { StyleSheet, Text, View, Button, ScrollView } from 'react-native';
+import SleepLastSevenDays from '../components/SleepLastSevenDays';
+import SleepByPeriod from '../components/SleepByPeriod';
 import SleepSummary from '../components/SleepSummary';
 
 import config from '../config.json';
 const primaryColor = config.primaryColor;
 
 import UserController from '../controllers/userController';
-import SleepLogController from '../controllers/sleeplogsController';
+import SleepComparison from '../components/SleepComparison';
 
 const Dashboard = ({ navigation }) => {
-    const [user, setUser] = React.useState(null);
-    const [sleepLogs, setSleepLogs] = React.useState([]);
-
-    React.useEffect(() => {
-        const fetchData = async () => {
-            try {
-                const fetchedUser = await UserController.getUser();
-                setUser(fetchedUser);
-            } catch (error) {
-                console.error('Error fetching user:', error);
-            }
-        };
-        fetchData();
-    }, []);
-
-    React.useEffect(() => {
-        const fetchData = async () => {
-            try {
-                if (user !== null) {
-                    const fetchedSleepLogs = await SleepLogController.getAllSleepLogs(user);
-                    setSleepLogs(fetchedSleepLogs);
-                }
-            } catch (error) {
-                console.error('Error fetching sleep logs:', error);
-            }
-        };
-        fetchData();
-    }, [user]);
-
     React.useEffect(() => {
         navigation.setOptions({
             headerRight: () => <Button title='Logout' onPress={() => handleLogout()} color={primaryColor}/>
@@ -55,13 +28,30 @@ const Dashboard = ({ navigation }) => {
 
     return (
         <View style={styles.container}>
-            {
-                sleepLogs.length < 7 ? (
-                    <Text style={styles.message}>Not enough data.</Text>
-                ) : (
-                    <SleepSummary sleepLogs={sleepLogs}/>
-                )
-            }
+            <ScrollView vertical showsVerticalScrollIndicator={false}>
+                <View style={styles.sevenDaysContainer}>
+                    <ScrollView horizontal showsHorizontalScrollIndicator={false}>
+                        <View style={styles.card}>
+                            <SleepLastSevenDays/>
+                        </View>
+                    </ScrollView>
+                    <ScrollView horizontal showsHorizontalScrollIndicator={false}>
+                        <View style={styles.card}>
+                            <SleepByPeriod/>
+                        </View>
+                    </ScrollView>
+                    <ScrollView horizontal showsHorizontalScrollIndicator={false}>
+                        <View style={styles.card}>
+                            <SleepSummary/>
+                        </View>
+                    </ScrollView>
+                    <ScrollView horizontal showsHorizontalScrollIndicator={false}>
+                        <View style={styles.card}>
+                            <SleepComparison/>
+                        </View>
+                    </ScrollView>
+                </View>
+            </ScrollView>
         </View>
     );
 };
@@ -70,8 +60,25 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
         backgroundColor: '#fff',
-        alignItems: 'center',
-        justifyContent: 'center',
+    },
+    sevenDaysContainer: {
+        //backgroundColor: '#fafafa'
+    },
+    card: {
+        width: 400,
+        paddingLeft: 10, paddingRight: 10, paddingTop: 0, paddingBottom: 15,
+        margin: 20,
+        borderRadius: 10,
+        backgroundColor: '#fff',
+        shadowColor: '#000',
+        shadowOffset: {
+            width: 0,
+            height: 2,
+        },
+        shadowOpacity: 0.25,
+        shadowRadius: 3.84,
+        elevation: 5,
+        overflow: 'hidden', // Hides overflow content
     },
     message: {
         margin: 30,

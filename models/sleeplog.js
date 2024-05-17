@@ -13,15 +13,21 @@ class SleepLog {
     }
 
     durationInHours() {
-        return ((this.duration_ms / 1000) / 60) / 60;
+        return Number((((this.duration_ms / 1000) / 60) / 60).toFixed(1));
     }
 
-    formattedStartDate() {
-        const date = new Date(this.startDate);
+    formattedEndDate() {
+        const date = new Date(this.endDate);
         const day = date.getDate();
         const month = date.getMonth() + 1;
-        return `${day}`;
-        //return `${day < 10 ? `0${day}`: day}/${month < 10 ? `0${month}`: day}`;
+        return `${day < 10 ? `0${day}`: day}/${month < 10 ? `0${month}`: day}`;
+    }
+
+    formattedEndDateLong() {
+        const date = new Date(this.endDate);
+        const day = date.getDate();
+        const month = date.getMonth() + 1;
+        return `${day < 10 ? `0${day}`: day}/${month < 10 ? `0${month}`: day}/${date.getFullYear()}`;
     }
 }
 

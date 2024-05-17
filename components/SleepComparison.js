@@ -8,11 +8,14 @@ import UserController from '../controllers/userController';
 import config from '../config.json';
 const primaryColor = config.primaryColor;
 
-const SleepSummary = () => {
-    const [sleepLogs, setSleepLogs] = React.useState([]);
+const SleepComparison = () => {
+    const [sleepLogs7, setSleepLogs7] = React.useState([]);
+    const [sleepLogs14, setSleepLogs14] = React.useState([]);
     const [user, setUser] = React.useState(null);
-    const [sum, setSum] = React.useState(0);
-    const [average, setAverage] = React.useState(0);
+    const [sum7, setSum7] = React.useState(0);
+    const [sum14, setSum14] = React.useState(0);
+    const [average7, setAverage7] = React.useState(0);
+    const [average14, setAverage14] = React.useState(0);
 
     React.useEffect(() => {
         const fetchData = async () => {
@@ -30,9 +33,18 @@ const SleepSummary = () => {
         const fetchData = async () => {
             try {
                 if (user !== null) {
-                    const fetchedSleepLogs = await SleepLogController.getSleepLogs(user);
-                    fetchedSleepLogs.reverse();
-                    setSleepLogs(fetchedSleepLogs);
+                    const fetchedSleepLogs = await SleepLogController.getSleepLogsLastFourteenDays(user);
+                    logs7 = [];
+                    logs14 = [];
+                    fetchedSleepLogs.forEach((sleepLog, index) => {
+                        if (index < 7) {
+                            logs7.push(sleepLog);
+                        } else {
+                            logs14.push(sleepLog);
+                        }
+                    });
+                    setSleepLogs7(logs7);
+                    setSleepLogs14(logs14);
                 }
             } catch (error) {
                 console.error('Error fetching sleep logs:', error);
@@ -42,20 +54,25 @@ const SleepSummary = () => {
     }, [user]);
 
     React.useEffect(() => {
-        const sumOfSleeps = sleepLogs.reduce((previous, current) => {
+        const sumOfSleeps7 = sleepLogs7.reduce((previous, current) => {
             return previous + current.durationInHours();
         }, 0);
-        setSum(sumOfSleeps);
-        setAverage(sumOfSleeps / sleepLogs.length);
-    }, [sleepLogs]);
+        const sumOfSleeps14 = sleepLogs14.reduce((previous, current) => {
+            return previous + current.durationInHours();
+        }, 0);
+        setSum7(sumOfSleeps7);
+        setSum14(sumOfSleeps14);
+        setAverage7(sumOfSleeps7 / sleepLogs7.length);
+        setAverage14(sumOfSleeps14 / sleepLogs14.length);
+    }, [sleepLogs14]);
 
     return (
         <>
             {
                 <>
-                    <Text style={styles.h1}>Summary</Text>
-                    <Text style={styles.h2}>You have slept {sum.toFixed(0)} hours in total.</Text>
-                    <Text style={styles.h2}>On average, you have slept {average.toFixed(2)} hours per night.</Text>
+                    <Text style={styles.h1}>Comparison</Text>
+                    <Text style={styles.h2}>Last week: {sum7.toFixed(2)} hours slept. The week before: {sum14.toFixed(2)} hours slept</Text>
+                    <Text style={styles.h2}>Average last week: {average7.toFixed(2)}. Average the week before: {average14.toFixed(2)}</Text>
                 </>
             }
         </>
@@ -118,4 +135,4 @@ const styles = StyleSheet.create({
     },
 });
 
-export default SleepSummary;
+export default SleepComparison;
